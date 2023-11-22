@@ -1,23 +1,38 @@
-import express, { Request, Response, Express } from "express";
+import { config } from "dotenv";
+config();
 
-import dotenv from "dotenv";
-dotenv.config();
+import express, { Express, Request, Response, NextFunction } from "express";
+import mongoose from "mongoose";
+import routes from "./routes/routes.js";
+import tasks from "./tasks.js";
 
-// Global variables
-const PORT: string | number = process.env.PORT || 3000;
+const PORT: string = process.env.PORT || "3001";
+const DATABASE_URL: string = process.env.DATABASE_URL || "";
 
-const main = async (): Promise<void> => {
-  // Main application
-  const app: Express = express();
-
-  app.get("/", (request: Request, response: Response) => {
-    response.send("Hello Word");
-  });
-
-  app.listen(PORT, () => {
-    console.log(`- Server ON.\nLINK: 'http://localhost:${PORT}'.`);
-  });
+const preventBadData = (
+  error: Error,
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  if (error instanceof SyntaxError) {
+    return response.status(400).json({ message: "Invalid data." });
+  }
+  next();
 };
 
-// Start
-main();
+const app: Express = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(preventBadData);
+app.use(routes);
+
+const initAppCallback = async () => {
+  await mongoose.connect(DATABASE_URL);
+  console.log(`- Server ON.\nLINK: 'http://localhost:${PORT}'.`);
+
+  // Periodic tasks
+  tasks.deleteExpiredCodesFromDatabase();
+  tasks.deleteExpiredTokensFromDatabase();
+};
+app.listen(PORT, initAppCallback);
