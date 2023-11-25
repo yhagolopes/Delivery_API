@@ -16,7 +16,7 @@ export const transporter = createTransport({
   },
 });
 
-export const getEmailOptions = (to: string, code: number) => {
+export const getRegisterCodeOptions = (to: string, code: number) => {
   return {
     from: USERNAME,
     to: to,

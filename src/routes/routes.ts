@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 
-import userRouter from "./user.js";
+import chatRouter from "./chat.js";
 import publicRouter from "./public.js";
 
 const itsWorking = (request: Request, response: Response) => {
@@ -10,7 +10,7 @@ const itsWorking = (request: Request, response: Response) => {
 const router = Router();
 router.get("/", itsWorking);
 
-router.use("/private", userRouter);
+router.use("/chat", chatRouter);
 router.use("/public", publicRouter);
 
 export default router;

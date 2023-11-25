@@ -3,8 +3,11 @@ config();
 
 import express, { Express, Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
+import { Server } from "socket.io";
+
 import routes from "./routes/routes.js";
 import tasks from "./tasks.js";
+import ioNamespaces from "./namespaces/namespaces.js";
 
 const PORT: string = process.env.PORT || "3001";
 const DATABASE_URL: string = process.env.DATABASE_URL || "";
@@ -35,4 +38,7 @@ const initAppCallback = async () => {
   tasks.deleteExpiredCodesFromDatabase();
   tasks.deleteExpiredTokensFromDatabase();
 };
-app.listen(PORT, initAppCallback);
+const expressServer = app.listen(PORT, initAppCallback);
+
+const io = new Server(expressServer);
+ioNamespaces(io);

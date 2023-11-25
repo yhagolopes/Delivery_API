@@ -3,6 +3,10 @@ import { Schema, model, Types } from "mongoose";
 // Hours * Milliseconds
 export const TOKEN_EXPIRES_IN: number = 48 * 3600000;
 
+export interface IAccessToken {
+  tokenId: string;
+}
+
 interface IOnwer {
   id: string;
   ip: string;

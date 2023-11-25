@@ -1,18 +1,20 @@
 import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 
-import Code, { CODE_EXPIRES_IN } from "../models/code.js";
+import validateRegisterCode from "../validations/registerCode.js";
+import chatValidations from "../validations/chat.js";
+import userValidations from "../validations/user.js";
 
-export const handleInputErrors = (
+export const input = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
-  const errors = validationResult(request);
-  if (!errors.isEmpty()) {
+  const validationErrors = validationResult(request);
+  if (!validationErrors.isEmpty()) {
     response
       .status(400)
-      .json({ errors: errors.array().map((error) => error.msg) });
+      .json({ errors: validationErrors.array().map((error) => error.msg) });
     return;
   }
 
@@ -20,34 +22,64 @@ export const handleInputErrors = (
 };
 
 // Maybe I shouldn't use the codeId
-export const verifyCodeSendedToEmail = async (
+export const registerCode = async (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   const { codeId, code, email } = request.body;
-  const requesterIp = request.ip;
+  const requesterIp = request.ip as string;
 
-  const requestedCode = await Code.findOne({ _id: codeId });
-  if (
-    requestedCode === null ||
-    requestedCode.code != code ||
-    requestedCode.requester.ip != requesterIp ||
-    requestedCode.requester.email != email
-  ) {
-    response.status(401).json({ message: "CODE DOESN'T EXIST." });
+  const validationErrors = await validateRegisterCode(
+    codeId,
+    code,
+    requesterIp,
+    email
+  );
+  if (validationErrors !== null) {
+    response.status(400).json({ message: validationErrors });
     return;
   }
-
-  const elapsedTime: number = requestedCode.createdAt + CODE_EXPIRES_IN;
-  if (Date.now() > elapsedTime) {
-    response.status(401).json({ message: "CODE EXPIRED." });
-    await requestedCode.deleteOne();
-    return;
-  }
-
-  // If code verified, then delete it
-  await requestedCode.deleteOne();
 
   next();
+};
+
+export const chatAccess = async (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  const { chatId } = request.params;
+  const { accessToken } = request.body;
+
+  const validationErrors = await chatValidations.access(chatId, accessToken);
+  if (validationErrors !== null) {
+    response.status(400).json({ message: validationErrors });
+    return;
+  }
+
+  next();
+};
+
+export const login = async (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  const { email, password } = request.params;
+
+  const validationErrors = await userValidations.login(email, password);
+  if (validationErrors !== null) {
+    response.status(400).json({ message: validationErrors });
+    return;
+  }
+
+  next();
+};
+
+export default {
+  input,
+  registerCode,
+  chatAccess,
+  login,
 };

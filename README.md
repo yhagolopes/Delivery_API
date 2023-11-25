@@ -7,3 +7,4 @@ A Express + Typescript server to make requests of products. I might call a E-com
 - [ ] Notifications using SocketIO.
 - [ ] Image uploader.
 - [ ] Admin control.
+- [x] Email sender.

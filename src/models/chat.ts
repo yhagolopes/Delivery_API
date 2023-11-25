@@ -7,7 +7,7 @@ export interface IMessage {
   sendedAt: number;
 }
 
-interface IChat {
+export interface IChat {
   _id: Types.ObjectId;
   onwersId: string[];
   messages: IMessage[];
