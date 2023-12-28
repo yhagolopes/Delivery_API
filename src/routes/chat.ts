@@ -1,15 +1,23 @@
 import { Router } from "express";
 
-import authTokenId from "../middlewares/auth.js";
-import chatController from "../controllers/chat.js";
-import validations from "../middlewares/validations.js";
+import chatController from "../controllers/chat/chat.js";
+import authMiddlewares from "../middlewares/auth/auth.js";
+import validationMiddlewares from "../middlewares/validations/validations.js";
 
 const router = Router();
-router.use(authTokenId);
-router.get("/:chatId", validations.chatAccess, chatController.getMessages);
+router.use(authMiddlewares.accessToken);
 
-router.post("/:chatId", validations.chatAccess, chatController.sendMessage);
-
-router.post("/:userChatId/create", chatController.createChatWithUser);
+router.get("/:chatId", authMiddlewares.chatAccess, chatController.getMessages);
+router.post(
+  "/:chatId",
+  authMiddlewares.chatAccess,
+  validationMiddlewares.userMessage,
+  chatController.sendMessage
+);
+router.post(
+  "/:userId/create",
+  authMiddlewares.chatCreation,
+  chatController.create
+);
 
 export default router;

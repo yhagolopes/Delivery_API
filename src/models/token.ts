@@ -8,8 +8,9 @@ export interface IAccessToken {
 }
 
 interface IOnwer {
-  id: string;
+  publicId: string;
   ip: string;
+  email: string;
 }
 
 export interface IToken {
@@ -20,10 +21,7 @@ export interface IToken {
 
 const tokensSchema = new Schema<IToken>(
   {
-    onwer: {
-      id: { type: String, required: true },
-      ip: { type: String, required: true },
-    },
+    onwer: { type: {} as IOnwer, required: true },
     createdAt: { type: Number, default: Date.now() },
   },
   { versionKey: false }

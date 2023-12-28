@@ -3,7 +3,7 @@ import { Schema, model, Types } from "mongoose";
 // Minutes * Milliseconds
 export const CODE_EXPIRES_IN: number = 5 * 60000;
 
-interface IRequester {
+interface IOnwer {
   ip: string;
   email: string;
 }
@@ -11,17 +11,14 @@ interface IRequester {
 export interface ICode {
   _id: Types.ObjectId;
   code: number;
-  requester: IRequester;
+  onwer: IOnwer;
   createdAt: number;
 }
 
 const codeSchema = new Schema<ICode>(
   {
     code: { type: Number, required: true },
-    requester: {
-      ip: { type: String, required: true },
-      email: { type: String, required: true },
-    },
+    onwer: { type: {} as IOnwer, required: true },
     createdAt: { type: Number, default: Date.now() },
   },
   { versionKey: false }

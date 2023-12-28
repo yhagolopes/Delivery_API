@@ -7,7 +7,7 @@ import { Server } from "socket.io";
 
 import routes from "./routes/routes.js";
 import tasks from "./tasks.js";
-import ioNamespaces from "./namespaces/namespaces.js";
+import ioNamespaces from "./socketio/namespaces.js";
 
 const PORT: string = process.env.PORT || "3001";
 const DATABASE_URL: string = process.env.DATABASE_URL || "";

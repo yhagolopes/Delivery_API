@@ -1,22 +1,25 @@
 import { Schema, model, Types } from "mongoose";
 
+import { IImage } from "../utils/namespaces.js";
+
+interface IPublicProfile {
+  id: string;
+  name: string;
+  image: IImage;
+}
+
 export interface IUser {
   _id: Types.ObjectId;
-  name: string;
+  public: IPublicProfile;
   email: string;
-  codifiedPassword: string;
-  chatId: string;
+  password: string;
 }
 
 const userSchema = new Schema<IUser>(
   {
-    name: { type: String, required: true },
+    public: { type: {} as IPublicProfile, required: true },
     email: { type: String, required: true, unique: true },
-    codifiedPassword: { type: String, required: true },
-
-    // Each user will have a chatId
-    // To send a message this id will be passed as a parameter
-    chatId: { type: String, required: true },
+    password: { type: String, required: true },
   },
   { versionKey: false }
 );

@@ -1,11 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-
-export interface IMessage {
-  // Maybe i should use username instead user id
-  userId: string;
-  text: string;
-  sendedAt: number;
-}
+import { IMessage } from "../utils/namespaces.js";
 
 export interface IChat {
   _id: Types.ObjectId;

@@ -1,4 +1,5 @@
 import Token, { IToken, IAccessToken } from "../models/token.js";
+import Chat from "../models/chat.js";
 import { decodifyToken } from "../config/jsonwebtoken.js";
 
 export const hasExpired = (createdAt: number, expiresIn: number): boolean => {
@@ -22,9 +23,9 @@ export const isRequesterAChatOnwer = (
 // In validations I already checked it
 export const getStoredToken = async (accessToken: string): Promise<IToken> => {
   const { tokenId } = decodifyToken(accessToken) as IAccessToken;
-  const storedToken = await Token.findOne({ _id: tokenId });
+  const storedToken = (await Token.findOne({ _id: tokenId })) as IToken;
 
-  return storedToken as IToken;
+  return storedToken;
 };
 
 // Length 6

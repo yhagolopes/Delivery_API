@@ -1,8 +1,8 @@
-import { decodifyToken } from "../config/jsonwebtoken.js";
-import Token, { TOKEN_EXPIRES_IN, IAccessToken } from "../models/token.js";
-import { hasExpired } from "../utils/utils.js";
+import { decodifyToken } from "../../config/jsonwebtoken.js";
+import Token, { TOKEN_EXPIRES_IN, IAccessToken } from "../../models/token.js";
+import { hasExpired } from "../../utils/utils.js";
 
-const validateAccessToken = async (
+const authAccessToken = async (
   accessToken: string,
   requesterIp: string
 ): Promise<string | null> => {
@@ -20,4 +20,4 @@ const validateAccessToken = async (
   return null;
 };
 
-export default validateAccessToken;
+export default authAccessToken;
