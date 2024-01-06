@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 import Chat from "../../models/chat.js";
-import { getStoredToken } from "../../utils/utils.js";
+import getUserFromToken from "../../utils/getUserFromToken.js";
 import { isRequesterAChatOnwer } from "../../utils/utils.js";
 
 const authChatAccess = async (
@@ -14,8 +14,8 @@ const authChatAccess = async (
   const storedChat = await Chat.findOne({ _id: chatId });
   if (storedChat === null) return "Invalid Chat";
 
-  const { onwer } = await getStoredToken(accessToken);
-  const isAOnwer = isRequesterAChatOnwer(onwer.publicId, storedChat.onwersId);
+  const user = await getUserFromToken(accessToken);
+  const isAOnwer = isRequesterAChatOnwer(user.public.id, storedChat.members);
   if (!isAOnwer) return "Requester Is Not An Onwer";
 
   return null;

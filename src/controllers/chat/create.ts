@@ -1,22 +1,16 @@
 import { Request, Response } from "express";
 
-import User from "../../models/user.js";
 import Chat from "../../models/chat.js";
-
-import { getStoredToken } from "../../utils/utils.js";
+import getUserFromToken from "../../utils/getUserFromToken.js";
 
 const create = async (request: Request, response: Response) => {
   const { userId } = request.params;
   const { accessToken } = request.body;
 
-  const requestedUser = await User.findOne({ "public.id": userId });
-  const { onwer } = await getStoredToken(accessToken);
+  const user = await getUserFromToken(accessToken);
 
-  const onwersToAdd = [onwer.publicId, requestedUser!.public.id];
-
-  const storedChat = await Chat.create({
-    onwersId: onwersToAdd,
-  });
+  const members: string[] = [userId, user.public.id];
+  const storedChat = await Chat.create({ members: members });
   if (storedChat === null) {
     response.status(500).json({ message: "Chat Bad Creation" });
     return;

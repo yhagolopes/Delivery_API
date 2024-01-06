@@ -4,11 +4,10 @@ import authErrors from "../errors/auth/auth.js";
 import authAccessToken from "./middlewares/authAccessToken.js";
 import validationErrors from "../errors/validations/validations.js";
 
-import { getStoredToken } from "../utils/utils.js";
 import saveMessageInDatabase from "../utils/saveMessageInDatabase.js";
-import { IImage, IMessage } from "../utils/namespaces.js";
-import { fileTypeFromBuffer } from "file-type";
+import getUserFromToken from "../utils/getUserFromToken.js";
 import getImageFromBuffer from "../utils/getImageFromBuffer.js";
+import { IMessage } from "../models/chat.js";
 
 const _authConnection = async (
   socket: Socket,
@@ -21,8 +20,8 @@ const _authConnection = async (
   if (error !== null) return next(new Error(error));
 
   // Save Data
-  const { onwer } = await getStoredToken(accessToken);
-  socket.data.publicId = onwer.publicId;
+  const user = await getUserFromToken(accessToken);
+  socket.data.publicId = user.public.id;
   socket.data.chatId = chatId;
 
   next();
@@ -30,7 +29,6 @@ const _authConnection = async (
 
 const _connection = (namespace: Namespace) => {
   namespace.on("connection", (socket: Socket) => {
-    console.log("Joined In Connection", socket.data.publicId);
     const { chatId } = socket.data;
 
     socket.join(chatId);

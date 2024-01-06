@@ -1,20 +1,21 @@
 import { Request, Response } from "express";
 
 import saveMessageInDatabase from "../../utils/saveMessageInDatabase.js";
-import { getStoredToken } from "../../utils/utils.js";
-import { IMessage } from "../../utils/namespaces.js";
 import getImageFromBuffer from "../../utils/getImageFromBuffer.js";
+import getUserFromToken from "../../utils/getUserFromToken.js";
+import { IMessage } from "../../models/chat.js";
 
 const sendMessage = async (request: Request, response: Response) => {
   const { chatId } = request.params;
   const { accessToken, text, imageData } = request.body;
-  const { onwer } = await getStoredToken(accessToken);
+
+  const user = await getUserFromToken(accessToken);
 
   const imageBuffer: Buffer | undefined =
     imageData != undefined ? Buffer.from(imageData) : undefined;
 
   saveMessageInDatabase(chatId, {
-    userId: onwer.publicId,
+    userId: user.public.id,
     text: text,
     image: await getImageFromBuffer(imageBuffer),
     sendedAt: Date.now(),

@@ -36,7 +36,6 @@ const initAppCallback = async () => {
 
   // Periodic tasks
   tasks.deleteExpiredCodesFromDatabase();
-  tasks.deleteExpiredTokensFromDatabase();
 };
 const expressServer = app.listen(PORT, initAppCallback);
 

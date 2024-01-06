@@ -3,9 +3,6 @@ export interface IImage {
   data: Buffer;
 }
 
-export interface IMessage {
-  userId: string;
-  text?: string;
-  image?: IImage;
-  sendedAt: number;
+export interface IUserToken {
+  tokenId: string;
 }

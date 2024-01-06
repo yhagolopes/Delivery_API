@@ -1,5 +1,5 @@
-import Code, { CODE_EXPIRES_IN } from "./models/code.js";
-import Token, { TOKEN_EXPIRES_IN } from "./models/token.js";
+import Code from "./models/code.js";
+import { TIME_TO_CODE_EXPIRE } from "./errors/auth/registerCode.js";
 import { hasExpired } from "./utils/utils.js";
 
 const deleteExpiredCodesFromDatabase = () => {
@@ -8,29 +8,17 @@ const deleteExpiredCodesFromDatabase = () => {
     const codes = await Code.find({});
 
     for (let i: number = 0; i < codes.length; i++) {
-      const hasCodeExpired = hasExpired(codes[i].createdAt, CODE_EXPIRES_IN);
+      const hasCodeExpired = hasExpired(
+        codes[i].createdAt,
+        TIME_TO_CODE_EXPIRE
+      );
       if (hasCodeExpired) {
         await codes[i].deleteOne();
       }
     }
-  }, CODE_EXPIRES_IN);
-};
-
-const deleteExpiredTokensFromDatabase = () => {
-  setInterval(async () => {
-    console.log("Deleting Tokens...");
-    const tokens = await Token.find({});
-
-    for (let i: number = 0; i < tokens.length; i++) {
-      const hasTokenExpired = hasExpired(tokens[i].createdAt, TOKEN_EXPIRES_IN);
-      if (hasTokenExpired) {
-        await tokens[i].deleteOne();
-      }
-    }
-  }, TOKEN_EXPIRES_IN);
+  }, TIME_TO_CODE_EXPIRE);
 };
 
 export default {
   deleteExpiredCodesFromDatabase,
-  deleteExpiredTokensFromDatabase,
 };

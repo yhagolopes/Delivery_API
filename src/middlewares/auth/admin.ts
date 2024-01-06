@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import authErrors from "../../errors/auth/auth.js";
-import { getStoredToken } from "../../utils/utils.js";
+import getUserFromToken from "../../utils/getUserFromToken.js";
 
 export const authAdmin = async (
   request: Request,
@@ -9,9 +9,9 @@ export const authAdmin = async (
   next: NextFunction
 ) => {
   const { accessToken } = request.body;
-  const { onwer } = await getStoredToken(accessToken);
 
-  const error = authErrors.admin(onwer.email);
+  const user = await getUserFromToken(accessToken);
+  const error = authErrors.admin(user.email);
   if (!error) {
     response.status(400).json({ message: error });
     return;

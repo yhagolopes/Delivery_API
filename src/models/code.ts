@@ -1,8 +1,5 @@
 import { Schema, model, Types } from "mongoose";
 
-// Minutes * Milliseconds
-export const CODE_EXPIRES_IN: number = 5 * 60000;
-
 interface IOnwer {
   ip: string;
   email: string;

@@ -1,8 +1,10 @@
+import { Types } from "mongoose";
+
 import { hasExpired } from "../../utils/utils.js";
 import Code from "../../models/code.js";
 
-import { CODE_EXPIRES_IN } from "../../models/code.js";
-import { Types } from "mongoose";
+// Minutes * Milliseconds
+export const TIME_TO_CODE_EXPIRE: number = 5 * 60000;
 
 const authRegisterCode = async (
   codeId: string,
@@ -22,7 +24,10 @@ const authRegisterCode = async (
 
   if (requestedCode.code != code) return "Incorret Code";
 
-  const hasCodeExpired = hasExpired(requestedCode.createdAt, CODE_EXPIRES_IN);
+  const hasCodeExpired = hasExpired(
+    requestedCode.createdAt,
+    TIME_TO_CODE_EXPIRE
+  );
   if (hasCodeExpired) return "Code Expired";
 
   return null;

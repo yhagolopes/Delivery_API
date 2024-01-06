@@ -1,7 +1,7 @@
 import Chat from "../../models/chat.js";
 import User from "../../models/user.js";
 import authAdmin from "./admin.js";
-import { getStoredToken } from "../../utils/utils.js";
+import getUserFromToken from "../../utils/getUserFromToken.js";
 
 const _preventMutiplesChatWithSameUser = async (
   onwersToAdd: string[]
@@ -43,18 +43,18 @@ const authChatCreation = async (
     return objectToReturn;
   }
 
-  const { onwer } = await getStoredToken(requesterAccessToken);
+  const user = await getUserFromToken(requesterAccessToken);
 
   const isOneOfUsersAnAdmin = _isOneOfUsersAnAdmin(
     requestedUser.email,
-    onwer.email
+    user.email
   );
   if (!isOneOfUsersAnAdmin) {
     objectToReturn.error = "One Of Users Have To Be An Admin";
     return objectToReturn;
   }
 
-  const onwersToAdd = [onwer.publicId, requestedUser.public.id];
+  const onwersToAdd = [user.public.id, requestedUser.public.id];
   const chatId = await _preventMutiplesChatWithSameUser(onwersToAdd);
   if (chatId !== null) {
     objectToReturn.error = "Chat Already Exists";
